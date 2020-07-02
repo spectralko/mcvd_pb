@@ -1,0 +1,55 @@
+---
+   - hosts: bmetall
+     gather_facts: no
+     tasks:
+#####################################################################  
+       - name: Delete Logs StatsWatcher
+         file: 
+           path: /root/StatsWatcher_Logs/*2019*
+           state: absent
+#####################################################################
+       - name: Copy UrClient to host
+         copy:
+#           src: /mnt/backups/clients/UrBackup_Client_Linux_2.4.10.sh
+#           dest: /root
+#           owner: root
+#           group: root
+#           mode: '0755'
+#####################################################################
+#       - name: Install Phyton-pip
+#         yum:
+#           name: "{{ pakages }}"
+#           state: present
+#         vars:
+#           pakages:
+#             - epel-release
+#             - python-pip
+####################################################################
+#       - name: Install expect
+#         pip:
+#           name: pexpect
+#         become: yes
+####################################################################
+#       - name: Exec UrClient on host
+#         expect:
+#         command: sh /root/UrBackup_Client_Linux_2.4.10.sh
+#         responses: '[Y/n]' : Y
+ ###################################################################    
+       - name: Restore button on Web-GUI
+         replace:
+           path: /etc/sysconfig/urbackupclient
+           regexp: 'RESTORE=disabled'
+           replace: "RESTORE=server-confirms"
+####################################################################
+       - iptables_raw:
+           name: Update IPTABLES for urBackup
+           rules: |
+             -A INPUT -m state --state NEW -m tcp -p tcp --dport 35621 -j ACCEPT
+             -A INPUT -m state --state NEW -m udp -p udp --dport 35622 -j ACCEPT
+             -A INPUT -m state --state NEW -m tcp -p tcp --dport 35623 -j ACCEPT
+###################################################################
+       - name: Restart IPTABLES 
+         service:
+          name: iptables
+          state: restarted
+####################################################################
