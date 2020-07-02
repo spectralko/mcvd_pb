@@ -1,0 +1,22 @@
+---
+#Название PB
+- name: Провера targetcli
+#На какие hosts будем его применять  
+  hosts: all
+  gather_facts: no
+  tasks:
+#Проверка состояния IPMI
+    - name: Выполнение команды targetcli
+      command: targetcli ls
+      register: target_cli
+     
+#Проверяем если, не Normal, то пишем в файл
+#    - name: Провера условния на состояни Normal
+#      debug: var!="Normal"
+
+#Вывод состояния IPMI
+    - name: Выводим состояние по targetcli в файл
+      local_action:
+       module: copy
+       content: "{{ target_cli.stdout }}"
+       dest: "/root/Documents/targetcli/{{ inventory_hostname }}.txt"
