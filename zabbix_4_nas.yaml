@@ -1,0 +1,40 @@
+---
+#Название PB
+- name: Провера Zabbix Agent
+#На какие hosts будем его применять  
+  hosts: all
+  gather_facts: no
+  tasks:
+############################################
+  - name: replace line Server
+    lineinfile: 
+      path: /etc/zabbix/zabbix_agentd.conf
+      regexp: 'Server=' 
+      line: 'Server=10.10.27.201'
+############################################
+  - name: replace line ServerActive
+    lineinfile: 
+      path: /etc/zabbix/zabbix_agentd.conf
+      regexp: 'ServerActive=' 
+      line: 'ServerActive=10.10.27.201'
+##############################################
+  - name: restart zabbix_agent
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: zabbix-agent
+#Проверка состояния IPMI
+  - name: Выполнение команды targetcli
+    command: grep Server /etc/zabbix/zabbix_agentd.conf
+    register: zabbix_agent
+     
+#Проверяем если, не Normal, то пишем в файл
+#    - name: Провера условния на состояни Normal
+#      debug: var!="Normal"
+
+#Вывод состояния IPMI
+  - name: Выводим состояние по targetcli в файл
+    local_action:
+     module: copy
+     content: "{{ zabbix_agent.stdout }}"
+     dest: "/root/Documents/zabbix_agent/{{ inventory_hostname }}.txt"
