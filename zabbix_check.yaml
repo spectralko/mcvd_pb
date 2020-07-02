@@ -1,0 +1,22 @@
+---
+#Название PB
+- name: Провера Zabbix Agent
+#На какие hosts будем его применять  
+  hosts: all
+  gather_facts: no
+  tasks:
+#Проверка состояния IPMI
+  - name: Выполнение команды targetcli
+    command: grep Server /etc/zabbix/zabbix_agentd.conf
+    register: zabbix_agent
+     
+#Проверяем если, не Normal, то пишем в файл
+#    - name: Провера условния на состояни Normal
+#      debug: var!="Normal"
+
+#Вывод состояния IPMI
+  - name: Выводим состояние по targetcli в файл
+    local_action:
+      module: copy
+      content: "{{ zabbix_agent.stdout }}"
+      dest: "/root/Documents/zabbix_agent/{{ inventory_hostname }}.txt"
