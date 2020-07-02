@@ -1,0 +1,18 @@
+---
+#Название PB
+- name: Провера urbackup
+#На какие hosts будем его применять  
+  hosts: all
+  gather_facts: no
+  tasks:
+#Проверка состояния IPMI
+    - name: Выполнение команды urbackup status
+      command: urbackupclientctl status
+      register: urbackup
+
+#Вывод состояния IPMI
+    - name: Выводим состояние по targetcli в файл
+      local_action:
+       module: copy
+       content: "{{ urbackup.stdout }}"
+       dest: "/root/Documents/urbackup_status/{{ inventory_hostname }}.txt"
