@@ -1,0 +1,26 @@
+---
+   - hosts: all-sw
+     gather_facts: no
+     connection: local
+     tasks:
+##############################################################################
+       - name: run show commands
+         telnet:
+           port: 23
+           login_prompt: "Password: "
+           user: Admin2014
+           prompts:
+             - "[>:#]"
+           command:
+             - enable
+             - Admin2014
+             - conf t
+             - ip domain name mcvd.mosreg
+             - ip ssh version 2
+             - username root privilege 15 password Admin2014
+             - enable secret Admin2014
+             - aaa new-model
+             - line vty 10 15
+             - transport input ssh
+             - exit
+             - do-exec write
