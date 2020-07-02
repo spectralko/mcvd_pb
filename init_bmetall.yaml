@@ -1,0 +1,26 @@
+---
+   - hosts: all
+     gather_facts: no
+     tasks:
+################################################################       
+       - name: Copy mcvd.repo to host
+         copy:
+           src: /mnt/backups/clients/mcvd.repo
+           dest: /etc/yum.repos.d/
+           owner: root
+           group: root
+           mode: '0755'
+################################################################
+       - name: Выполнение команды rm -rf
+         raw: |
+           rm -rf /etc/yum.repos.d/Cent*
+           rm -rf /root/StatsWatcher_Logs/*2019*
+         
+################################################################
+       - name: install MC & iscsi
+         yum:
+           name:
+            - mc
+            - iscsi-initiator-*
+            - wget
+           state: latest
