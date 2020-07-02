@@ -1,0 +1,40 @@
+---
+   - hosts: all
+     gather_facts: no
+     tasks:
+################################################################       
+       - name: Copy REAR to host
+         copy:
+           src: /mnt/backups/clients/rear-2.5-1.el7.x86_64.rpm
+           dest: /root
+           owner: root
+           group: root
+           mode: '0755'
+#################################################################       
+       - name: Copy SYSLINUX to host
+         copy:
+           src: /mnt/backups/clients/syslinux-4.05-15.el7.x86_64.rpm
+           dest: /root
+           owner: root
+           group: root
+           mode: '0755'
+################################################################        
+       - name: Install SYSLINUX & REAR
+         yum:
+           name: "{{ pakages_rear }}"
+           state: present
+         vars:
+           pakages_rear:
+             - 'syslinux-4.05-15.el7.x86_64.rpm'
+             - 'rear-2.5-1.el7.x86_64.rpm'
+################################################################ 
+       - name: Config REAR local.Conf
+         copy:
+           content: |
+                     BACKUP=NETFS
+                     BACKUP_URL="nfs://10.183.3.87/mnt/backups/mcvdbackup/images/"
+                     BACKUP_PROG_ARCHIVE="$(hostname)_$(date '+%Y-%m-%d')-FULL"
+                     BACKUP_PROG_EXCLUDE=( '/mnt/*' '/opt/*' )
+                     USE_RESOLV_CONF="$(hostname)"
+                     OUTPUT=ISO
+           dest: /etc/rear/local.conf
