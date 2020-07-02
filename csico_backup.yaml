@@ -1,0 +1,13 @@
+---
+   - name: IOS
+     hosts: all-sw
+     gather_facts: no
+     tasks:
+      - name: run show commands
+        ios_command:
+          commands: show run
+        register: backup_cisco
+      - name: Выводим состояние по targetcli в файл
+        copy:
+         content: "{{ backup_cisco.stdout[0] }}"
+         dest: "/mnt/backups/mcvdbackup/netdev/{{ inventory_hostname }}@{{ lookup('pipe', 'date +%Y-%m-%d') }}.cfg"
