@@ -1,0 +1,25 @@
+---
+#Название PB
+- name: Провера Zabbix Agent
+#На какие hosts будем его применять  
+  hosts: all
+  gather_facts: no
+  tasks:
+############################################
+  - name: Config SOFT RAID
+    copy:
+      content: |
+                UserParameter=mdadm.status,egrep -c "\[.*._.*\]" /proc/mdstat
+      dest: /etc/zabbix/zabbix_agentd.d/mdstat_info.conf
+##############################################
+  - name: Config Bad Camera
+    copy:
+      content: |
+                UserParameter=camera_bad,curl -s http://agent:DK98utVP@localhost:8080/channel/videoParameters | jq . | grep -c \"status\":\ 1
+      dest: /etc/zabbix/zabbix_agentd.d/camera_bad.conf
+##############################################
+  - name: restart zabbix_agent
+    systemd:
+      state: restarted
+      daemon_reload: yes
+      name: zabbix-agent
