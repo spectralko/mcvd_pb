@@ -5,12 +5,6 @@
   hosts: all
   gather_facts: no
   tasks:
-#Sozdaem camera_status.csv 
-#  - name: Выполняем создание файла сamera_status
-#    raw: |
-#            rm -rf /root/Documents/camera_status/camera_status.csv
-#            touch /root/Documents/camera_status/camera_status.csv
-#Проверка состояния IPMI
   - name: Выполнение команды Camera
     raw: |
             hostname -I
@@ -20,7 +14,6 @@
     register: camera_status
     ignore_errors: true
     check_mode: no
-#Вывод состояния IPMI
   - name: Выводим состояние по Camera в файл
     lineinfile:
       dest: "/root/Documents/camera_status/camera_status.csv"
