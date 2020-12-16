@@ -1,0 +1,22 @@
+
+---
+   - hosts: all
+     gather_facts: no
+     vars:
+       mcvd_password: "{{ lookup('password', '/root/omsy_passwd/{{ mcvd_username  }} chars=ascii_letters,digits length=8')  }}"
+       mcvd_username: "{{ inventory_hostname[:3] | lower  }}admin"
+     tasks:
+################################################################
+       - user:
+           name: "{{ mcvd_username }}"
+           password: "{{ mcvd_password | password_hash('sha512') }}"
+           createhome: yes
+           state: present
+           group: wheel
+       - debug:
+           msg: "{{ ansible_host  }} - Логин: {{ mcvd_username  }} Пароль: {{ mcvd_password  }}"
+#         register: to_mingos
+#       - local_action:
+#           module: copy
+#           content: "{{ to_mingos.stdout  }}"
+#           dest: /root/omsy_pwd.txt
